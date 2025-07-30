@@ -116,7 +116,7 @@ const MovieDetails = () => {
         </div>
       </div>
 
-      <p className="text-lg font-medium mt-20">Your Favorite Cast</p>
+      <p className="text-lg font-medium mt-20">Cast</p>
       <div className="overflow-x-auto no-scrollbar mt-8 pb-4">
         <div className="flex items-center gap-4 w-max px-4">
           {show.movie.casts.slice(0, 12).map((cast, index) => (
