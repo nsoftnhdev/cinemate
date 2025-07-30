@@ -118,10 +118,14 @@ const sendBookingConfirmationEmail = inngest.createFunction(
               }</p>
               <p style="margin: 5px 0;"><strong>📅 Date:</strong> ${new Date(
                 booking.show.showDateTime
-              ).toLocaleDateString("en-US", { timeZone: "Asia/Kuala_Lumpur" })}</p>
+              ).toLocaleDateString("en-US", {
+                timeZone: "Asia/Kuala_Lumpur",
+              })}</p>
               <p style="margin: 5px 0;"><strong>🕒 Time:</strong> ${new Date(
                 booking.show.showDateTime
-              ).toLocaleTimeString("en-US", { timeZone: "Asia/Kuala_Lumpur" })}</p>
+              ).toLocaleTimeString("en-US", {
+                timeZone: "Asia/Kuala_Lumpur",
+              })}</p>
               <p style="margin: 5px 0;"><strong>💺 Seats:</strong> ${booking.bookedSeats.join(
                 ", "
               )}</p>
