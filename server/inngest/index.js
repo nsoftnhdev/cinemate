@@ -277,7 +277,7 @@ const sendNewShowNotifications = inngest.createFunction(
               </p>
 
               <div style="text-align: center; margin: 30px 0;">
-                <a href="https://cinemate.app/shows" style="background-color: #F84565; color: #fff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                <a href="https://cinemate-peach.vercel.app/movies" style="background-color: #F84565; color: #fff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">
                   Check Showtimes
                 </a>
               </div>
