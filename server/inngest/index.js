@@ -96,53 +96,53 @@ const sendBookingConfirmationEmail = inngest.createFunction(
       to: booking.user.email,
       subject: `Payment Confirmation: "${booking.show.movie.title}" booked!`,
       body: `<div style="font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f5f7fa; padding: 30px;">
-  <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-    <div style="background-color: #F84565; padding: 20px; text-align: center;">
-      <h1 style="color: #ffffff; margin: 0; font-size: 24px;">🎬 Your Booking is Confirmed!</h1>
-    </div>
+        <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+          <div style="background-color: #F84565; padding: 20px; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 24px;">🎬 Your Booking is Confirmed!</h1>
+          </div>
 
-    <div style="padding: 30px;">
-      <p style="font-size: 18px; margin: 0 0 15px;">Hi <strong>${
-        booking.user.name
-      }</strong>,</p>
-      <p style="font-size: 16px; margin: 0 0 20px;">
-        Thank you for booking with <strong>Cinemate</strong>. Your ticket for 
-        <span style="color: #F84565;"><strong>"${
-          booking.show.movie.title
-        }"</strong></span> has been successfully confirmed.
-      </p>
+          <div style="padding: 30px;">
+            <p style="font-size: 18px; margin: 0 0 15px;">Hi <strong>${
+              booking.user.name
+            }</strong>,</p>
+            <p style="font-size: 16px; margin: 0 0 20px;">
+              Thank you for booking with <strong>Cinemate</strong>. Your ticket for 
+              <span style="color: #F84565;"><strong>"${
+                booking.show.movie.title
+              }"</strong></span> has been successfully confirmed.
+            </p>
 
-      <div style="border: 1px solid #eee; border-radius: 6px; padding: 20px; margin-bottom: 25px;">
-        <p style="margin: 5px 0;"><strong>🎥 Movie:</strong> ${
-          booking.show.movie.title
-        }</p>
-        <p style="margin: 5px 0;"><strong>📅 Date:</strong> ${new Date(
-          booking.show.showDateTime
-        ).toLocaleDateString("en-US", { timeZone: "Asia/Kuala_Lumpur" })}</p>
-        <p style="margin: 5px 0;"><strong>🕒 Time:</strong> ${new Date(
-          booking.show.showDateTime
-        ).toLocaleTimeString("en-US", { timeZone: "Asia/Kuala_Lumpur" })}</p>
-        <p style="margin: 5px 0;"><strong>💺 Seats:</strong> ${booking.bookedSeats.join(
-          ", "
-        )}</p>
-      </div>
+            <div style="border: 1px solid #eee; border-radius: 6px; padding: 20px; margin-bottom: 25px;">
+              <p style="margin: 5px 0;"><strong>🎥 Movie:</strong> ${
+                booking.show.movie.title
+              }</p>
+              <p style="margin: 5px 0;"><strong>📅 Date:</strong> ${new Date(
+                booking.show.showDateTime
+              ).toLocaleDateString("en-US", { timeZone: "Asia/Kuala_Lumpur" })}</p>
+              <p style="margin: 5px 0;"><strong>🕒 Time:</strong> ${new Date(
+                booking.show.showDateTime
+              ).toLocaleTimeString("en-US", { timeZone: "Asia/Kuala_Lumpur" })}</p>
+              <p style="margin: 5px 0;"><strong>💺 Seats:</strong> ${booking.bookedSeats.join(
+                ", "
+              )}</p>
+            </div>
 
-      <p style="font-size: 15px; margin-bottom: 20px;">We hope you have an amazing movie experience! 🍿</p>
+            <p style="font-size: 15px; margin-bottom: 20px;">We hope you have an amazing movie experience! 🍿</p>
 
-      <div style="text-align: center;">
-        <a href="https://cinemate.app/bookings/${
-          booking._id
-        }" style="background-color: #F84565; color: #fff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">
-          View Booking
-        </a>
-      </div>
-    </div>
+            <div style="text-align: center;">
+              <a href="https://cinemate.app/bookings/${
+                booking._id
+              }" style="background-color: #F84565; color: #fff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                View Booking
+              </a>
+            </div>
+          </div>
 
-    <div style="background-color: #f1f1f1; text-align: center; padding: 20px; font-size: 13px; color: #777;">
-      <p style="margin: 0;">This email was sent by NRoxas@Cinemate • © 2025 All rights reserved.</p>
-    </div>
-  </div>
-</div>`,
+          <div style="background-color: #f1f1f1; text-align: center; padding: 20px; font-size: 13px; color: #777;">
+            <p style="margin: 0;">This email was sent by NRoxas@Cinemate • © 2025 All rights reserved.</p>
+          </div>
+        </div>
+      </div>`,
     });
   }
 );
