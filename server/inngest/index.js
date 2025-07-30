@@ -139,7 +139,7 @@ const sendBookingConfirmationEmail = inngest.createFunction(
     </div>
 
     <div style="background-color: #f1f1f1; text-align: center; padding: 20px; font-size: 13px; color: #777;">
-      <p style="margin: 0;">This email was sent by Cinemate • © 2025 All rights reserved.</p>
+      <p style="margin: 0;">This email was sent by NRoxas@Cinemate • © 2025 All rights reserved.</p>
     </div>
   </div>
 </div>`,
