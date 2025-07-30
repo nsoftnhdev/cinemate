@@ -52,7 +52,7 @@ const MyBookings = () => {
             <img
               src={image_base_url + item.show.movie.poster_path}
               alt=""
-              className="md:max-w-45 aspect-video h-auto object-cover object-bottom rounded"
+              className="md:max-w-45 aspect-video h-auto object-fit object-bottom rounded"
             />
             <div className="flex flex-col p-4">
               <p className="text-lg font-semibold">{item.show.movie.title}</p>
