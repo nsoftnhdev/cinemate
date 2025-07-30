@@ -147,10 +147,165 @@ const sendBookingConfirmationEmail = inngest.createFunction(
   }
 );
 
+// Inngest function to send reminders
+const sendShowReminders = inngest.createFunction(
+  { id: "send-show-reminders" },
+  { cron: "0 */8 * * *" }, // Every 8 hours
+  async ({ step }) => {
+    const now = new Date();
+    const in8Hours = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+    const windowStart = new Date(in8Hours.getTime() - 10 * 60 * 1000);
+
+    // Prepare reminder tasks
+    const reminderTasks = await step.run("prepare-reminder-tasks", async () => {
+      const shows = await Show.find({
+        showTime: { $gte: windowStart, $lte: in8Hours },
+      }).populate("movie");
+
+      const tasks = [];
+
+      for (const show of shows) {
+        if (!show.movie || !show.occupiedSeats) continue;
+
+        const userIds = [...new Set(Object.values(show.occupiedSeats))];
+
+        if (userIds.length === 0) continue;
+
+        const users = await User.find({ _id: { $in: userIds } }).select(
+          "name email"
+        );
+
+        for (const user of users) {
+          tasks.push({
+            userEmail: user.email,
+            userName: user.name,
+            movieTitle: show.movie.title,
+            showTime: show.showTime,
+          });
+        }
+      }
+      return tasks;
+    });
+
+    if (reminderTasks.length === 0) {
+      return { sent: 0, message: "No reminders to send." };
+    }
+
+    // Send reminder emails
+    const results = await step.run("send-all-reminders", async () => {
+      return await Promise.allSettled(
+        reminderTasks.map((task) =>
+          sendEmail({
+            to: task.userEmail,
+            subject: `Reminder: Your movie "${task.movieTitle}" starts soon!`,
+            body: `<div style="font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f9f9f9; padding: 30px;">
+      <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <div style="background-color: #FFA726; padding: 20px; text-align: center;">
+          <h2 style="color: #ffffff; margin: 0; font-size: 22px;">🎬 Don't Miss Your Show!</h2>
+        </div>
+
+        <div style="padding: 30px;">
+          <p style="font-size: 18px; margin: 0 0 15px;">Hi <strong>${task.userName}</strong>,</p>
+          <p style="font-size: 16px; margin: 0 0 20px;">
+            This is a friendly reminder that your movie 
+            <span style="color: #FFA726;"><strong>"${task.movieTitle}"</strong></span> is starting soon.
+          </p>
+
+          <div style="border: 1px solid #eee; border-radius: 6px; padding: 20px; margin-bottom: 25px;">
+            <p style="margin: 5px 0;"><strong>🎥 Movie:</strong> ${task.movieTitle}</p>
+            <p style="margin: 5px 0;"><strong>📅 Date:</strong> ${task.showDate}</p>
+            <p style="margin: 5px 0;"><strong>🕒 Time:</strong> ${task.showTime}</p>
+            <p style="margin: 5px 0;"><strong>💺 Seats:</strong> ${task.seats}</p>
+          </div>
+
+          <p style="font-size: 15px; margin-bottom: 20px;">
+            Please arrive 10–15 minutes early to avoid any delays.
+          </p>
+
+          <div style="text-align: center;">
+            <a href="${task.bookingLink}" style="background-color: #FFA726; color: #fff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+              View Booking
+            </a>
+          </div>
+        </div>
+
+        <div style="background-color: #f1f1f1; text-align: center; padding: 20px; font-size: 13px; color: #777;">
+          <p style="margin: 0;">This reminder was sent by NRoxas@Cinemate • © 2025 All rights reserved.</p>
+        </div>
+      </div>
+    </div>`,
+          })
+        )
+      );
+    });
+
+    const sent = results.filter((r) => r.status === "fullfilled").length;
+    const failed = results.length - sent;
+
+    return {
+      sent,
+      failed,
+      message: `Sent ${sent} reminder(s), ${failed} failed.`,
+    };
+  }
+);
+
+// Inngest function to send notifications when a new show is added
+const sendNewShowNotifications = inngest.createFunction(
+  { id: "send-new-show-notifications" },
+  { event: "app/show.added" },
+  async ({ event }) => {
+    const { movieTitle } = event.data;
+
+    const users = await User.find({});
+
+    for (const user of users) {
+      const userEmail = user.email;
+      const userName = user.name;
+
+      const subject = `🎬 New Show Added: ${movieTitle}`;
+      const body = `<div style="font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f9f9f9; padding: 30px;">
+          <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <div style="background-color: #F84565; padding: 20px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 22px;">🎉 A New Show Just Dropped!</h1>
+            </div>
+
+            <div style="padding: 30px;">
+              <p style="font-size: 18px; margin: 0 0 15px;">Hi <strong>${userName}</strong>,</p>
+              <p style="font-size: 16px; margin: 0 0 20px;">
+                A new show for <strong style="color: #F84565;">"${movieTitle}"</strong> has been added on <strong>Cinemate</strong>! 🍿
+              </p>
+
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="https://cinemate.app/shows" style="background-color: #F84565; color: #fff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                  Check Showtimes
+                </a>
+              </div>
+
+              <p style="font-size: 15px;">Book early to get the best seats. See you there!</p>
+            </div>
+
+            <div style="background-color: #f1f1f1; text-align: center; padding: 20px; font-size: 13px; color: #777;">
+              <p style="margin: 0;">This email was sent by NRoxas@Cinemate • © 2025 All rights reserved.</p>
+            </div>
+          </div>
+        </div>`;
+      await sendEmail({
+        to: userEmail,
+        subject,
+        body,
+      });
+    }
+    return { message: "Notification sent." };
+  }
+);
+
 export const functions = [
   syncUserCreation,
   syncUserDeletion,
   syncUserUpdation,
   releaseSeatsAndDeleteBooking,
   sendBookingConfirmationEmail,
+  sendShowReminders,
+  sendNewShowNotifications,
 ];
